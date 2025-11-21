@@ -6,8 +6,15 @@ async function loadBooks() {
         parseAndRenderBooks(text);
     } catch (error) {
         console.error('Error loading books:', error);
-        document.getElementById('content').innerHTML = '<p>Error loading book list.</p>';
+        document.getElementById('content').innerHTML = '<p>Error loading book list. Please ensure books.md exists and is accessible.</p>';
     }
+}
+
+// Helper function to escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 
 function parseAndRenderBooks(markdown) {
@@ -24,7 +31,7 @@ function parseAndRenderBooks(markdown) {
         
         // Main title (h1)
         if (line.startsWith('# ')) {
-            html += `<h1>${line.substring(2)}</h1>`;
+            html += `<h1>${escapeHtml(line.substring(2))}</h1>`;
             i++;
         }
         // Section title (h2)
@@ -33,7 +40,7 @@ function parseAndRenderBooks(markdown) {
                 html += renderBook(currentBook);
                 currentBook = null;
             }
-            html += `<h2>${line.substring(3)}</h2>`;
+            html += `<h2>${escapeHtml(line.substring(3))}</h2>`;
             currentSection = line.substring(3);
             i++;
             
@@ -48,7 +55,7 @@ function parseAndRenderBooks(markdown) {
                     break;
                 }
                 // This is the section description
-                html += `<p class="section-description">${nextLine}</p>`;
+                html += `<p class="section-description">${escapeHtml(nextLine)}</p>`;
                 i++;
                 break;
             }
@@ -121,17 +128,17 @@ function renderBook(book) {
     
     // Image
     if (book.image) {
-        html += `<div class="book-image"><img src="${book.image}" alt="${book.title} cover"></div>`;
+        html += `<div class="book-image"><img src="${escapeHtml(book.image)}" alt="${escapeHtml(book.title)} cover"></div>`;
     }
     
     html += '<div class="book-details">';
     
     // Title
-    html += `<div class="book-title">${book.title}</div>`;
+    html += `<div class="book-title">${escapeHtml(book.title)}</div>`;
     
     // Author
     if (book.author) {
-        html += `<div class="book-author">by ${book.author}</div>`;
+        html += `<div class="book-author">by ${escapeHtml(book.author)}</div>`;
     }
     
     // Links
@@ -139,21 +146,33 @@ function renderBook(book) {
     
     // Add auto-generated links from ISBN
     if (book.isbn) {
-        const cleanIsbn = book.isbn.replace(/-/g, '');
-        html += `<a href="https://bookshop.org/book/${cleanIsbn}" target="_blank" rel="noopener">Bookshop.org</a>`;
-        html += `<a href="https://www.indiebookstores.ca/book/${cleanIsbn}" target="_blank" rel="noopener">IndieBound Canada</a>`;
+        const cleanIsbn = book.isbn.replace(/[^0-9X]/gi, '');
+        // Validate ISBN length (10 or 13 digits)
+        if (cleanIsbn.length === 10 || cleanIsbn.length === 13) {
+            html += `<a href="https://bookshop.org/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">Bookshop.org</a>`;
+            html += `<a href="https://www.indiebookstores.ca/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">IndieBound Canada</a>`;
+        }
     }
     
     // Add custom links
     book.links.forEach(link => {
-        html += `<a href="${link.url}" target="_blank" rel="noopener">${link.text}</a>`;
+        // Validate URL scheme to prevent javascript: URLs
+        try {
+            const url = new URL(link.url);
+            if (url.protocol === 'http:' || url.protocol === 'https:') {
+                html += `<a href="${escapeHtml(link.url)}" target="_blank" rel="noopener">${escapeHtml(link.text)}</a>`;
+            }
+        } catch (e) {
+            // Invalid URL, skip it
+            console.warn('Invalid URL:', link.url);
+        }
     });
     
     html += '</div>';
     
     // Note
     if (book.note) {
-        html += `<div class="book-note">${book.note}</div>`;
+        html += `<div class="book-note">${escapeHtml(book.note)}</div>`;
     }
     
     html += '</div></div>';

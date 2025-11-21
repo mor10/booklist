@@ -163,7 +163,7 @@ function renderBook(book) {
                 html += `<a href="https://bookshop.org/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">Bookshop.org</a>`;
             }
             if (book.storeLinks.includes('indiebookstores')) {
-                html += `<a href="https://indiebookstores.org/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">IndieBound</a>`;
+                html += `<a href="https://indiebookstores.ca/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">IndieBound</a>`;
             }
             if (book.storeLinks.includes('libro')) {
                 html += `<a href="https://libro.fm/audiobooks/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">Libro.fm</a>`;

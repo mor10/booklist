@@ -146,9 +146,13 @@ function renderBook(book) {
     
     // Add auto-generated links from ISBN
     if (book.isbn) {
+        // Clean and validate ISBN
         const cleanIsbn = book.isbn.replace(/[^0-9X]/gi, '');
-        // Validate ISBN length (10 or 13 digits)
-        if (cleanIsbn.length === 10 || cleanIsbn.length === 13) {
+        // Validate ISBN: 10 digits (optionally ending in X) or 13 digits
+        const isValidIsbn10 = /^[0-9]{9}[0-9X]$/i.test(cleanIsbn);
+        const isValidIsbn13 = /^[0-9]{13}$/.test(cleanIsbn);
+        
+        if (isValidIsbn10 || isValidIsbn13) {
             html += `<a href="https://bookshop.org/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">Bookshop.org</a>`;
             html += `<a href="https://www.indiebookstores.ca/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">IndieBound Canada</a>`;
         }

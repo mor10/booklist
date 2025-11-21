@@ -142,7 +142,8 @@ Books exploring privacy rights, surveillance technologies, and data protection
 - Author: Heather Burns
 - ISBN: 
 - Pubdate: November 01, 2022
-- Store Links: Smashing https://www.smashingmagazine.com/printed-books/understanding-privacy/
+- Links:
+  - [Smashing](https://www.smashingmagazine.com/printed-books/understanding-privacy/)
 - Image: 
 - Note: 
 
@@ -153,7 +154,9 @@ Books on ethical design practices, inclusive design, and responsible creation
 - Author: Eric Meyer and Sara Wachter-Boettcher
 - ISBN: 9798218503741
 - Pubdate: September 01, 2024
-- Store Links: bookshop, indiebookstores, libro, read online: https://abookdeparts-dfrl.netlify.app/
+- Store Links: bookshop, indiebookstores, libro
+- Links:
+  - [Read online](https://abookdeparts-dfrl.netlify.app/)
 - Image: 
 - Note: 
 

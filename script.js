@@ -71,6 +71,7 @@ function parseAndRenderBooks(markdown) {
                 isbn: '',
                 image: '',
                 links: [],
+                storeLinks: [], // Which store links to show: bookshop, indiebookstores, libro
                 note: ''
             };
             i++;
@@ -85,6 +86,10 @@ function parseAndRenderBooks(markdown) {
                 currentBook.image = line.substring(9);
             } else if (line.startsWith('- Note: ')) {
                 currentBook.note = line.substring(8);
+            } else if (line.startsWith('- Store Links: ')) {
+                // Parse comma-separated list of store links
+                const storesStr = line.substring(15).toLowerCase();
+                currentBook.storeLinks = storesStr.split(',').map(s => s.trim());
             } else if (line.startsWith('- Links:')) {
                 // Start collecting links
                 i++;
@@ -144,7 +149,7 @@ function renderBook(book) {
     // Links
     html += '<div class="book-links">';
     
-    // Add auto-generated links from ISBN
+    // Add auto-generated links from ISBN based on storeLinks configuration
     if (book.isbn) {
         // Clean and validate ISBN
         const cleanIsbn = book.isbn.replace(/[^0-9X]/gi, '');
@@ -153,8 +158,16 @@ function renderBook(book) {
         const isValidIsbn13 = /^[0-9]{13}$/.test(cleanIsbn);
         
         if (isValidIsbn10 || isValidIsbn13) {
-            html += `<a href="https://bookshop.org/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">Bookshop.org</a>`;
-            html += `<a href="https://www.indiebookstores.ca/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">IndieBound Canada</a>`;
+            // Generate links based on storeLinks configuration
+            if (book.storeLinks.includes('bookshop')) {
+                html += `<a href="https://bookshop.org/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">Bookshop.org</a>`;
+            }
+            if (book.storeLinks.includes('indiebookstores')) {
+                html += `<a href="https://indiebookstores.org/book/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">IndieBound</a>`;
+            }
+            if (book.storeLinks.includes('libro')) {
+                html += `<a href="https://libro.fm/audiobooks/${escapeHtml(cleanIsbn)}" target="_blank" rel="noopener">Libro.fm</a>`;
+            }
         }
     }
     
